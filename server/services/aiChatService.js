@@ -121,6 +121,7 @@ async function handleSearchProducts(message) {
       stock: product.stock,
       description: product.description,
       specifications: product.specifications || {},
+      imageUrl: product.imageUrl || null,
     })),
   };
 

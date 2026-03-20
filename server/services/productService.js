@@ -1,7 +1,65 @@
 const { Product } = require('../models/Product');
 
+const CATEGORY_ALIASES = Object.freeze({
+  laptop: 'laptops',
+  laptops: 'laptops',
+  desktop: 'desktops',
+  desktops: 'desktops',
+  monitor: 'monitors',
+  monitors: 'monitors',
+  accessory: 'accessories',
+  accessories: 'accessories',
+});
+
 function escapeRegex(value) {
   return String(value).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+function normalizeCategory(category) {
+  if (typeof category !== 'string') {
+    return undefined;
+  }
+
+  return CATEGORY_ALIASES[category.trim().toLowerCase()] || category.trim();
+}
+
+function getCategorySearchTerms(category) {
+  switch (category) {
+    case 'laptops':
+      return ['laptop', 'laptops'];
+    case 'desktops':
+      return ['desktop', 'desktops'];
+    case 'monitors':
+      return ['monitor', 'monitors'];
+    case 'accessories':
+      return ['accessory', 'accessories'];
+    default:
+      return [category];
+  }
+}
+
+function buildCategoryCondition(category) {
+  const normalizedCategory = normalizeCategory(category);
+
+  if (!normalizedCategory) {
+    return null;
+  }
+
+  const exactCategoryMatch = {
+    category: new RegExp(`^${escapeRegex(normalizedCategory)}$`, 'i'),
+  };
+  const termConditions = getCategorySearchTerms(normalizedCategory).flatMap((term) => {
+    const termRegex = new RegExp(`\\b${escapeRegex(term)}\\b`, 'i');
+
+    return [
+      { name: termRegex },
+      { description: termRegex },
+    ];
+  });
+
+  return {
+    $or: [exactCategoryMatch, ...termConditions],
+  };
 }
 
 function buildProductSearchQuery(filters = {}) {
@@ -12,39 +70,56 @@ function buildProductSearchQuery(filters = {}) {
     minPrice,
     maxPrice,
   } = filters;
-  const query = {};
+  const conditions = [];
 
   if (keyword) {
     const keywordRegex = new RegExp(escapeRegex(keyword.trim()), 'i');
-    query.$or = [
-      { name: keywordRegex },
-      { brand: keywordRegex },
-      { category: keywordRegex },
-      { description: keywordRegex },
-    ];
+    conditions.push({
+      $or: [
+        { name: keywordRegex },
+        { brand: keywordRegex },
+        { category: keywordRegex },
+        { description: keywordRegex },
+      ],
+    });
   }
 
   if (brand) {
-    query.brand = new RegExp(`^${escapeRegex(brand.trim())}$`, 'i');
+    conditions.push({
+      brand: new RegExp(escapeRegex(brand.trim()), 'i'),
+    });
   }
 
   if (category) {
-    query.category = new RegExp(`^${escapeRegex(category.trim())}$`, 'i');
+    const categoryCondition = buildCategoryCondition(category);
+    if (categoryCondition) {
+      conditions.push(categoryCondition);
+    }
   }
 
   if (minPrice !== undefined || maxPrice !== undefined) {
-    query.price = {};
+    const price = {};
 
     if (minPrice !== undefined) {
-      query.price.$gte = Number(minPrice);
+      price.$gte = Number(minPrice);
     }
 
     if (maxPrice !== undefined) {
-      query.price.$lte = Number(maxPrice);
+      price.$lte = Number(maxPrice);
     }
+
+    conditions.push({ price });
   }
 
-  return query;
+  if (conditions.length === 0) {
+    return {};
+  }
+
+  if (conditions.length === 1) {
+    return conditions[0];
+  }
+
+  return { $and: conditions };
 }
 
 function sanitizeSearchFilters(rawFilters = {}) {
@@ -65,8 +140,9 @@ function sanitizeSearchFilters(rawFilters = {}) {
     sanitized.brand = brand.trim();
   }
 
-  if (typeof category === 'string' && category.trim()) {
-    sanitized.category = category.trim();
+  const normalizedCategory = normalizeCategory(category);
+  if (typeof normalizedCategory === 'string' && normalizedCategory.trim()) {
+    sanitized.category = normalizedCategory.trim();
   }
 
   if (minPrice !== undefined && minPrice !== '') {

@@ -3,6 +3,8 @@ import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import '../components/css/style.css';
 import logo from '../assets/image/logo.png';
+import CopilotPanel from './copilot/CopilotPanel';
+import { addProductToCart } from '../utils/cart';
 
 const HomeList = () => {
   const [products, setProducts] = useState([]);
@@ -72,6 +74,15 @@ const HomeList = () => {
     setSearchQuery(event.target.value);
   };
 
+  const handleViewProduct = (productId) => {
+    navigate(`/product/${productId}`);
+  };
+
+  const handleAddRecommendedProductToCart = (product) => {
+    addProductToCart(product, 1);
+    alert(`${product.name} has been added to your cart.`);
+  };
+
   if (loading) return <p>Loading...</p>;
   if (error) return <p>{error}</p>;
 
@@ -119,7 +130,7 @@ const HomeList = () => {
                   <li><Link to="/signup">Sign Up</Link></li>
                 </>
               )}
-              {user && user.role !== 'admin' && <li><Link to="/cart">Cart</Link></li>}
+              {user?.role !== 'admin' && <li><Link to="/cart">Cart</Link></li>}
             </ul>
           </div>
         </div>
@@ -127,42 +138,51 @@ const HomeList = () => {
 
       {/* Filter Section */}
       <div className="filter-section">
-        <label htmlFor="category">Filter by Category: </label>
-        <select id="category" value={category} onChange={handleCategoryChange}>
-          <option value="all">All</option>
-          <option value="laptops">Laptops</option>
-          <option value="desktops">Desktops</option>
-          <option value="monitors">Monitors</option>
-          <option value="accessories">Accessories</option>
-        </select>
+        <div className="filter-bar">
+          <label htmlFor="category">Filter by Category</label>
+          <select id="category" value={category} onChange={handleCategoryChange}>
+            <option value="all">All</option>
+            <option value="laptops">Laptops</option>
+            <option value="desktops">Desktops</option>
+            <option value="monitors">Monitors</option>
+            <option value="accessories">Accessories</option>
+          </select>
+        </div>
       </div>
 
       {/* Product List Section */}
-      <div className="productlist">
-        <ul>
-          {filteredProducts.length > 0 ? (
-            filteredProducts.map((product) => (
-              <li key={product.productId}>
-                {user && user.role === 'admin' ? (
-                  <div>
-                    <img src={product.imageUrl} alt={product.name} />
-                    <p>{product.name}</p>
-                  </div>
-                ) : (
-                  <Link to={`/product/${product.productId}`}>
-                    <img src={product.imageUrl} alt={product.name} />
+      <div className="home-content">
+        <div className="productlist productlist-main">
+          <ul>
+            {filteredProducts.length > 0 ? (
+              filteredProducts.map((product) => (
+                <li key={product.productId}>
+                  {user && user.role === 'admin' ? (
                     <div>
+                      <img src={product.imageUrl} alt={product.name} />
                       <p>{product.name}</p>
-                      <p>${product.price.toFixed(2)}</p>
                     </div>
-                  </Link>
-                )}
-              </li>
-            ))
-          ) : (
-            <p>No products available for the selected criteria.</p>
-          )}
-        </ul>
+                  ) : (
+                    <Link to={`/product/${product.productId}`}>
+                      <img src={product.imageUrl} alt={product.name} />
+                      <div>
+                        <p>{product.name}</p>
+                        <p>${product.price.toFixed(2)}</p>
+                      </div>
+                    </Link>
+                  )}
+                </li>
+              ))
+            ) : (
+              <p>No products available for the selected criteria.</p>
+            )}
+          </ul>
+        </div>
+
+        <CopilotPanel
+          onViewProduct={handleViewProduct}
+          onAddToCart={handleAddRecommendedProductToCart}
+        />
       </div>
 
       {/* Footer Section */}

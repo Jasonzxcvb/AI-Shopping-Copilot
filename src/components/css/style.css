@@ -109,6 +109,37 @@ body, html {
   background-color: #007bff;
 }
 
+.filter-section {
+  width: 100%;
+  max-width: 1400px;
+  margin: 20px auto 0;
+  padding: 0 16px;
+  box-sizing: border-box;
+}
+
+.filter-bar {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  border: 1px solid #dce4ee;
+  border-radius: 12px;
+  background-color: #f8fbff;
+}
+
+.filter-bar label {
+  font-weight: 600;
+  color: #26415f;
+}
+
+.filter-bar select {
+  min-width: 180px;
+  padding: 8px 10px;
+  border: 1px solid #ccd6e2;
+  border-radius: 8px;
+  background-color: #fff;
+}
+
 /* Product list styling */
 .productlist ul {
   display: flex;
@@ -143,6 +174,233 @@ body, html {
 
 .productlist ul li p {
   margin: 5px 0;
+}
+
+.home-content {
+  display: flex;
+  align-items: flex-start;
+  gap: 24px;
+  width: 100%;
+  max-width: 1400px;
+  margin: 16px auto 32px;
+  padding: 0 16px;
+  box-sizing: border-box;
+}
+
+.productlist-main {
+  flex: 1;
+}
+
+.copilot-panel {
+  width: 360px;
+  flex-shrink: 0;
+  position: sticky;
+  top: 16px;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  background-color: #ffffff;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+  padding: 16px;
+}
+
+.copilot-panel-header h2 {
+  margin: 0 0 8px;
+  font-size: 22px;
+}
+
+.copilot-panel-header p {
+  margin: 0 0 16px;
+  color: #555;
+  line-height: 1.4;
+}
+
+.copilot-samples {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.copilot-samples button,
+.copilot-card-actions button,
+.copilot-comparison-header button,
+.copilot-input-row button,
+.copilot-toggle-button {
+  border: none;
+  border-radius: 8px;
+  background-color: #0b69c7;
+  color: #fff;
+  cursor: pointer;
+}
+
+.copilot-samples button {
+  padding: 8px 10px;
+  font-size: 12px;
+}
+
+.copilot-empty,
+.copilot-messages {
+  background-color: #f7f9fc;
+  border: 1px solid #e4e8ef;
+  border-radius: 10px;
+  padding: 12px;
+  margin-bottom: 16px;
+  max-height: 320px;
+  overflow-y: auto;
+}
+
+.copilot-message {
+  margin-bottom: 12px;
+  padding: 10px;
+  border-radius: 10px;
+}
+
+.copilot-message:last-child {
+  margin-bottom: 0;
+}
+
+.copilot-message-user {
+  background-color: #e8f1ff;
+}
+
+.copilot-message-assistant {
+  background-color: #eef7ee;
+}
+
+.copilot-message-role {
+  font-size: 12px;
+  font-weight: bold;
+  margin-bottom: 6px;
+  text-transform: uppercase;
+  color: #4a4a4a;
+}
+
+.copilot-input-row {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.copilot-input-row textarea {
+  width: 100%;
+  box-sizing: border-box;
+  resize: vertical;
+  min-height: 80px;
+  border: 1px solid #d4d8df;
+  border-radius: 8px;
+  padding: 10px;
+  font-size: 14px;
+}
+
+.copilot-input-row button {
+  align-self: flex-end;
+  padding: 10px 14px;
+}
+
+.copilot-error {
+  color: #c9302c;
+  margin: 0 0 12px;
+}
+
+.copilot-hint {
+  color: #555;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.copilot-section {
+  margin-top: 18px;
+}
+
+.copilot-section h3 {
+  margin: 0;
+}
+
+.copilot-section-heading {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.copilot-section-note {
+  margin: 0;
+  font-size: 12px;
+  color: #66768a;
+}
+
+.copilot-product-grid,
+.copilot-comparison-grid {
+  display: grid;
+  gap: 12px;
+}
+
+.copilot-product-card,
+.copilot-comparison-card {
+  border: 1px solid #e1e6ee;
+  border-radius: 10px;
+  background-color: #fbfcfe;
+  padding: 12px;
+}
+
+.copilot-product-card h4,
+.copilot-comparison-card h4 {
+  margin-top: 0;
+  margin-bottom: 10px;
+}
+
+.copilot-product-card p,
+.copilot-comparison-card p {
+  margin: 6px 0;
+}
+
+.copilot-card-actions,
+.copilot-comparison-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.copilot-card-actions {
+  margin-top: 12px;
+}
+
+.copilot-card-actions button,
+.copilot-comparison-header button,
+.copilot-toggle-button {
+  padding: 8px 10px;
+}
+
+.copilot-toggle-button {
+  width: 100%;
+  margin-top: 10px;
+  background-color: #edf4fd;
+  color: #0b4f93;
+}
+
+.copilot-specs ul {
+  margin: 8px 0 0;
+  padding-left: 18px;
+}
+
+.copilot-action-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.copilot-action-tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background-color: #eef3fb;
+  color: #244b78;
+  font-size: 12px;
+  font-weight: 600;
 }
 
 /* Product detail styling */
@@ -214,6 +472,29 @@ body, html {
   font-size: 14px;
 }
 
+.shopping-cart {
+  max-width: 1100px;
+  margin: 24px auto;
+  padding: 0 16px 24px;
+}
+
+.shopping-cart-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.clear-cart-button {
+  border: 1px solid #d5dce6;
+  background-color: #fff;
+  color: #35506f;
+  border-radius: 8px;
+  padding: 8px 12px;
+  cursor: pointer;
+}
+
 .cart-list {
   list-style: none;
   padding: 0;
@@ -265,6 +546,10 @@ input[type="number"] {
   text-align: right;
   font-size: 1.2em;
   font-weight: bold;
+}
+
+.total button {
+  margin-left: 12px;
 }
 
 .checkout-button {
@@ -378,6 +663,22 @@ input[type="number"] {
 
 /* Responsive Design */
 @media screen and (max-width: 768px) {
+  .home-content {
+    flex-direction: column;
+  }
+
+  .copilot-panel {
+    width: auto;
+    position: static;
+  }
+
+  .filter-bar,
+  .shopping-cart-header,
+  .copilot-section-heading {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
   .form-container {
     margin: 20px;
     padding: 15px;
@@ -406,4 +707,3 @@ input[type="number"] {
     max-width: 60px;
   }
 }
-

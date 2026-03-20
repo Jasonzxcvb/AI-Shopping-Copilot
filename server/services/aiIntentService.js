@@ -9,15 +9,56 @@ const INTENTS = Object.freeze({
 });
 
 const KNOWN_BRANDS = ['Dell', 'HP', 'Apple', 'Lenovo', 'Acer', 'Asus', 'Samsung', 'Logitech'];
-const KNOWN_CATEGORIES = ['laptops', 'desktops', 'monitors', 'accessories'];
+const CATEGORY_ALIASES = Object.freeze({
+  laptop: 'laptops',
+  laptops: 'laptops',
+  desktop: 'desktops',
+  desktops: 'desktops',
+  monitor: 'monitors',
+  monitors: 'monitors',
+  accessory: 'accessories',
+  accessories: 'accessories',
+});
+const CATEGORY_TERMS = Object.keys(CATEGORY_ALIASES).join('|');
+const FILLER_WORDS = new Set([
+  'a',
+  'an',
+  'the',
+  'me',
+  'my',
+  'please',
+  'show',
+  'find',
+  'search',
+  'looking',
+  'look',
+  'for',
+  'need',
+  'want',
+  'give',
+  'products',
+  'product',
+  'items',
+  'item',
+  'price',
+  'prices',
+  'that',
+  'is',
+  'with',
+  'of',
+  'to',
+  'than',
+  'dollar',
+  'dollars',
+]);
 
 function extractPriceRange(message) {
   const text = message.toLowerCase();
   let minPrice;
   let maxPrice;
 
-  const underMatch = text.match(/(?:under|below|less than|max(?:imum)?(?: price)?)[^\d]*(\d+(?:\.\d+)?)/i);
-  const overMatch = text.match(/(?:over|above|more than|min(?:imum)?(?: price)?)[^\d]*(\d+(?:\.\d+)?)/i);
+  const underMatch = text.match(/(?:under|below|less than|at most|max(?:imum)?(?: price)?)[^\d]*(\d+(?:\.\d+)?)/i);
+  const overMatch = text.match(/(?:over|above|more than|greater than|higher than|at least|min(?:imum)?(?: price)?)[^\d]*(\d+(?:\.\d+)?)/i);
   const betweenMatch = text.match(/between[^\d]*(\d+(?:\.\d+)?)[^\d]+(\d+(?:\.\d+)?)/i);
 
   if (betweenMatch) {
@@ -44,31 +85,51 @@ function extractKnownValue(message, values) {
   return values.find((value) => lowerMessage.includes(value.toLowerCase())) || null;
 }
 
+function extractCategory(message = '') {
+  const lowerMessage = message.toLowerCase();
+  const matchedAlias = Object.keys(CATEGORY_ALIASES).find((alias) => {
+    const regex = new RegExp(`\\b${alias}\\b`, 'i');
+    return regex.test(lowerMessage);
+  });
+
+  return matchedAlias ? CATEGORY_ALIASES[matchedAlias] : null;
+}
+
 function extractKeyword(message, brand, category) {
-  let cleaned = message
-    .replace(/compare|versus|vs\.?|show|find|search|looking for|looking|need|want|products?|items?|policy|policies|return|shipping|payment|order|status|check|tell me|what is|what's/gi, ' ')
+  let cleaned = message.toLowerCase()
+    .replace(/compare|comparison|versus|vs\.?|show|find|search|looking for|looking|need|want|give|recommend|recommendation/gi, ' ')
+    .replace(/products?|items?/gi, ' ')
     .replace(/under[^\d]*\d+(?:\.\d+)?/gi, ' ')
     .replace(/below[^\d]*\d+(?:\.\d+)?/gi, ' ')
+    .replace(/less than[^\d]*\d+(?:\.\d+)?/gi, ' ')
     .replace(/over[^\d]*\d+(?:\.\d+)?/gi, ' ')
     .replace(/above[^\d]*\d+(?:\.\d+)?/gi, ' ')
+    .replace(/more than[^\d]*\d+(?:\.\d+)?/gi, ' ')
+    .replace(/greater than[^\d]*\d+(?:\.\d+)?/gi, ' ')
+    .replace(/higher than[^\d]*\d+(?:\.\d+)?/gi, ' ')
     .replace(/between[^\d]*\d+(?:\.\d+)?[^\d]+\d+(?:\.\d+)?/gi, ' ')
-    .replace(/\b(a|an|the|my)\b/gi, ' ');
+    .replace(/\b(a|an|the|my|me|please|price|prices|dollar|dollars|that|is|with|for)\b/gi, ' ');
 
   if (brand) {
-    const brandRegex = new RegExp(brand, 'ig');
-    cleaned = cleaned.replace(brandRegex, ' ');
+    cleaned = cleaned.replace(new RegExp(brand, 'ig'), ' ');
   }
 
   if (category) {
-    const categoryRegex = new RegExp(category, 'ig');
-    cleaned = cleaned.replace(categoryRegex, ' ');
+    cleaned = cleaned.replace(new RegExp(category, 'ig'), ' ');
+    Object.entries(CATEGORY_ALIASES).forEach(([alias, normalizedCategory]) => {
+      if (normalizedCategory === category) {
+        cleaned = cleaned.replace(new RegExp(`\\b${alias}\\b`, 'ig'), ' ');
+      }
+    });
   }
 
-  cleaned = cleaned
-    .replace(/\s+/g, ' ')
-    .trim();
+  const tokens = cleaned
+    .replace(/[^a-z0-9\s-]/gi, ' ')
+    .split(/\s+/)
+    .map((token) => token.trim())
+    .filter((token) => token && !FILLER_WORDS.has(token));
 
-  return cleaned || '';
+  return tokens.join(' ');
 }
 
 function detectIntent(message = '') {
@@ -86,7 +147,7 @@ function detectIntent(message = '') {
     return INTENTS.CHECK_ORDER_STATUS;
   }
 
-  if (/(find|search|show|looking for|recommend|recommendation|under \$?\d+|below \$?\d+|laptop|desktop|monitor|accessory|brand)/.test(text)) {
+  if (new RegExp(`(find|search|show|looking for|recommend|recommendation|under|below|less than|over|above|more than|greater than|higher than|brand|products?|${CATEGORY_TERMS})`, 'i').test(text)) {
     return INTENTS.SEARCH_PRODUCTS;
   }
 
@@ -95,7 +156,7 @@ function detectIntent(message = '') {
 
 function extractSearchFilters(message = '') {
   const brand = extractKnownValue(message, KNOWN_BRANDS);
-  const category = extractKnownValue(message, KNOWN_CATEGORIES);
+  const category = extractCategory(message);
   const { minPrice, maxPrice } = extractPriceRange(message);
   const keyword = extractKeyword(message, brand, category);
 

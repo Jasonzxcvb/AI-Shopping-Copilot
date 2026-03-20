@@ -22,8 +22,7 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "start:frontend": "react-scripts start",
+    "start": "set PORT=3000&& react-scripts start",
     "start:backend": "node server/server.js",
     "postinstall": "npm rebuild bcrypt",
     "build": "react-scripts build",
@@ -49,3 +48,4 @@
     ]
   }
 }
+

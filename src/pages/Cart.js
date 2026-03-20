@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import logo from '../assets/image/logo.png';
 import '../components/css/style.css';
 import { useNavigate } from 'react-router-dom';
@@ -8,26 +8,32 @@ const ShoppingCart = () => {
   const [total, setTotal] = useState(0);
   const navigate = useNavigate();
 
-  // 加载购物车中的产品
   useEffect(() => {
     const cartItems = JSON.parse(localStorage.getItem('cart')) || [];
     setProducts(cartItems);
-    const totalAmount = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
-    setTotal(totalAmount);
+    setTotal(cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0));
   }, []);
 
-  const handleCheckout = () => {
-    navigate('/pay');
-  };  
-
-  // 更新总价
   useEffect(() => {
     const calcTotal = () =>
       products.reduce((sum, product) => sum + product.price * product.quantity, 0);
     setTotal(calcTotal());
   }, [products]);
 
-  // 处理产品数量更新
+  const handleCheckout = () => {
+    navigate('/pay');
+  };
+
+  const handleClearCart = () => {
+    if (!window.confirm('Clear all items from the cart?')) {
+      return;
+    }
+
+    localStorage.removeItem('cart');
+    setProducts([]);
+    setTotal(0);
+  };
+
   const handleQuantityChange = (productId, quantity) => {
     const updatedProducts = products.map((product) =>
       product.productId === productId ? { ...product, quantity: Math.max(1, quantity) } : product
@@ -35,15 +41,12 @@ const ShoppingCart = () => {
     setProducts(updatedProducts);
     localStorage.setItem('cart', JSON.stringify(updatedProducts));
   };
-  
 
-  // 移除产品
   const handleRemoveProduct = (productId) => {
     const updatedProducts = products.filter((product) => product.productId !== productId);
     setProducts(updatedProducts);
     localStorage.setItem('cart', JSON.stringify(updatedProducts));
   };
-  
 
   const renderCartItems = () => (
     <ul className="cart-list">
@@ -65,7 +68,6 @@ const ShoppingCart = () => {
       ))}
     </ul>
   );
-  
 
   return (
     <div>
@@ -89,7 +91,14 @@ const ShoppingCart = () => {
       </div>
 
       <div className="shopping-cart">
-        <h1>Shopping Cart</h1>
+        <div className="shopping-cart-header">
+          <h1>Shopping Cart</h1>
+          {products.length > 0 && (
+            <button type="button" className="clear-cart-button" onClick={handleClearCart}>
+              Clear Cart
+            </button>
+          )}
+        </div>
         {products.length > 0 ? (
           <>
             {renderCartItems()}

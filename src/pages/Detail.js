@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import '../components/css/style.css';
 import logo from '../assets/image/logo.png';
+import { addProductToCart } from '../utils/cart';
 
 const ProductDetail = () => {
   const { id } = useParams();
@@ -28,22 +29,7 @@ const ProductDetail = () => {
   }, [id]);
 
   const handleAddToCart = () => {
-    const cartItems = JSON.parse(localStorage.getItem('cart')) || [];
-    const existingProductIndex = cartItems.findIndex((item) => item.productId === product.productId);
-
-    if (existingProductIndex !== -1) {
-      cartItems[existingProductIndex].quantity += quantity;
-    } else {
-      cartItems.push({
-        productId: product.productId,
-        name: product.name,
-        price: product.price,
-        imageUrl: product.imageUrl,
-        quantity,
-      });
-    }
-
-    localStorage.setItem('cart', JSON.stringify(cartItems));
+    addProductToCart(product, quantity);
     alert(`${product.name} has been added to your cart.`);
   };
 
