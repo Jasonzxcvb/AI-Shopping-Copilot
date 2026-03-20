@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { Order } = require('../models/Order');
+const { normalizeOrderStatus, serializeOrder } = require('../constants/orderStatus');
 
 // Get all orders for a user
 router.get('/:userId', async (req, res) => {
@@ -15,7 +16,7 @@ router.get('/:userId', async (req, res) => {
             return res.status(404).json({ message: 'No orders found for this user' });
         }
 
-        res.json(orders);
+        res.json(orders.map((order) => serializeOrder(order)));
     } catch (error) {
         console.error('Error fetching orders:', error);
         res.status(500).json({ message: 'Server error' });
@@ -26,7 +27,7 @@ router.get('/:userId', async (req, res) => {
 router.get('/', async (req, res) => {
     try {
         const orders = await Order.find();
-        res.json(orders);
+        res.json(orders.map((order) => serializeOrder(order)));
     } catch (err) {
         console.error('Error fetching orders:', err);
         res.status(500).json({ message: 'Server error' });
@@ -41,6 +42,7 @@ router.post('/', async (req, res) => {
 
         // Extract fields from the request body
         const { orderId, userId, items, totalAmount, status, timestamp } = req.body;
+        const normalizedStatus = normalizeOrderStatus(status);
 
         // Log individual fields for debugging
         console.log('Order ID:', orderId);
@@ -56,14 +58,21 @@ router.post('/', async (req, res) => {
             return res.status(400).json({ message: 'Missing required fields' });
         }
 
+        if (!normalizedStatus) {
+            return res.status(400).json({ message: 'Invalid status value' });
+        }
+
         // Create a new order
-        const newOrder = new Order(req.body);
+        const newOrder = new Order({
+            ...req.body,
+            status: normalizedStatus,
+        });
         const savedOrder = await newOrder.save();
 
         // Log the saved order details
         console.log('Order Saved Successfully:', savedOrder);
 
-        res.status(201).json(savedOrder);
+        res.status(201).json(serializeOrder(savedOrder));
     } catch (err) {
         console.error('Error Creating Order:', err);
         res.status(500).json({ message: 'Server error' });
@@ -76,6 +85,7 @@ router.put('/:orderId', async (req, res) => {
     try {
         const orderId = Number(req.params.orderId); // Convert to Number
         const { status } = req.body;
+        const normalizedStatus = normalizeOrderStatus(status);
 
         console.log(`Status (from body): ${status}`);
 
@@ -86,8 +96,7 @@ router.put('/:orderId', async (req, res) => {
         }
 
         // Validate status
-        const allowedStatuses = ['Pending', 'Shipped', 'Delivered', 'Cancelled', 'Confirmed'];
-        if (!allowedStatuses.includes(status)) {
+        if (!normalizedStatus) {
             console.error('Invalid status value:', status);
             return res.status(400).json({ message: 'Invalid status value' });
         }
@@ -95,7 +104,7 @@ router.put('/:orderId', async (req, res) => {
         // Find and update the order
         const updatedOrder = await Order.findOneAndUpdate(
             { orderId },
-            { status },
+            { status: normalizedStatus },
             { new: true }
         );
 
@@ -106,7 +115,7 @@ router.put('/:orderId', async (req, res) => {
         }
 
         console.log('Order successfully updated:', updatedOrder);
-        res.json(updatedOrder);
+        res.json(serializeOrder(updatedOrder));
     } catch (err) {
         console.error('Error during order update:', err);
         res.status(500).json({ message: 'Server error' });

@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const { ORDER_STATUS } = require("../constants/orderStatus");
 
 const OrderSchema = new mongoose.Schema({
   orderId: {
@@ -25,7 +26,7 @@ const OrderSchema = new mongoose.Schema({
   status: {
     type: String,
     required: true,
-    enum: ["confirmed", "pending", "shipped", "delivered"],
+    enum: Object.values(ORDER_STATUS),
   },
   timestamp: {
     type: Date,

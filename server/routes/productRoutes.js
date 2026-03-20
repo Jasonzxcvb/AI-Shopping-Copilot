@@ -1,7 +1,55 @@
 const express = require('express');
 const router = express.Router();
-const axios = require('axios');
 const { Product } = require('../models/Product');
+const { searchProducts, compareProducts } = require('../services/productService');
+
+router.get('/search', async (req, res) => {
+    try {
+        const result = await searchProducts(req.query);
+        res.json({
+            success: true,
+            data: result,
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            error: {
+                code: 'PRODUCT_SEARCH_FAILED',
+                message: error.message,
+            },
+        });
+    }
+});
+
+router.post('/compare', async (req, res) => {
+    try {
+        const { productIds } = req.body;
+
+        if (!Array.isArray(productIds) || productIds.length === 0) {
+            return res.status(400).json({
+                success: false,
+                error: {
+                    code: 'INVALID_PRODUCT_IDS',
+                    message: 'productIds must be a non-empty array',
+                },
+            });
+        }
+
+        const result = await compareProducts(productIds);
+        res.json({
+            success: true,
+            data: result,
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            error: {
+                code: 'PRODUCT_COMPARE_FAILED',
+                message: error.message,
+            },
+        });
+    }
+});
 
 // Get all products
 router.get('/', async (req, res) => {

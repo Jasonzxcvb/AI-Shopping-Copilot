@@ -1,3 +1,5 @@
+require('dotenv').config();
+
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
@@ -17,9 +19,8 @@ app.use('/api/products', require('./routes/productRoutes'));
 app.use('/api/users', require('./routes/userRoutes'));
 app.use('/api/cart', require('./routes/cartRoutes'));
 app.use('/api/orders', require('./routes/orderRoutes'));
-
-const productRoutes = require('./routes/productRoutes');
-app.use('/api', productRoutes);
+app.use('/api/policies', require('./routes/policyRoutes'));
+app.use('/api/ai', require('./routes/aiRoutes'));
 
 
 // Launch Server
