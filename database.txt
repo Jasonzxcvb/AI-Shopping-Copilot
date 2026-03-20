@@ -1,0 +1,126 @@
+{
+  "_id": {
+    "$oid": "675100954484c6110c84db97"
+  },
+  "productId": 1,
+  "name": "Dell XPS 13",
+  "description": "13-inch laptop with an InfinityEdge display.",
+  "category": "laptops",
+  "brand": "Dell",
+  "price": 999.99,
+  "stock": 50,
+  "imageUrl": "/dell_xps_13.jpg",
+  "releaseDate": "2020-08-04",
+  "specifications": {
+    "processor": "Intel i7",
+    "ram": "16GB",
+    "storage": "512GB SSD",
+    "os": "Windows 10"
+  },
+  "reviews": []
+}
+{
+  "_id": {
+    "$oid": "675100954484c6110c84db98"
+  },
+  "productId": 2,
+  "name": "HP Spectre x360",
+  "description": "Premium 2-in-1 convertible laptop.",
+  "category": "laptops",
+  "brand": "HP",
+  "price": 1199.99,
+  "stock": 30,
+  "imageUrl": "/hp_spectre_x360.jpg",
+  "releaseDate": "2021-01-15",
+  "specifications": {
+    "processor": "Intel i5",
+    "ram": "8GB",
+    "storage": "256GB SSD",
+    "os": "Windows 10 Home"
+  },
+  "reviews": []
+}
+{
+  "_id": {
+    "$oid": "675100954484c6110c84db99"
+  },
+  "productId": 3,
+  "name": "Apple MacBook Air M1",
+  "description": "13-inch laptop powered by Apple’s M1 chip.",
+  "category": "laptops",
+  "brand": "Apple",
+  "price": 999.99,
+  "stock": 40,
+  "imageUrl": "/Apple_MacBook_Air_M1.jpg",
+  "releaseDate": "2020-11-17",
+  "specifications": {
+    "processor": "Apple M1",
+    "ram": "8GB",
+    "storage": "256GB SSD",
+    "os": "macOS Big Sur"
+  },
+  "reviews": []
+}
+{
+  "_id": {
+    "$oid": "675100954484c6110c84db9a"
+  },
+  "productId": 4,
+  "name": "Lenovo ThinkPad X1 Carbon",
+  "description": "Lightweight business laptop with robust features.",
+  "category": "laptops",
+  "brand": "Lenovo",
+  "price": 1399.99,
+  "stock": 20,
+  "imageUrl": "/lenovo_thinkpad_x1_carbon.jpg",
+  "releaseDate": "2021-03-10",
+  "specifications": {
+    "processor": "Intel i7",
+    "ram": "16GB",
+    "storage": "1TB SSD",
+    "os": "Windows 10 Pro"
+  },
+  "reviews": []
+}
+{
+  "_id": {
+    "$oid": "675100954484c6110c84db9b"
+  },
+  "productId": 5,
+  "name": "Acer Aspire 5",
+  "description": "Affordable laptop with solid performance.",
+  "category": "laptops",
+  "brand": "Acer",
+  "price": 549.99,
+  "stock": 60,
+  "imageUrl": "/acer_aspire_5.jpg",
+  "releaseDate": "2020-09-01",
+  "specifications": {
+    "processor": "AMD Ryzen 5",
+    "ram": "8GB",
+    "storage": "256GB SSD",
+    "os": "Windows 10"
+  },
+  "reviews": []
+}
+{
+  "_id": {
+    "$oid": "675100954484c6110c84db9c"
+  },
+  "productId": 6,
+  "name": "Asus ROG Zephyrus G14",
+  "description": "High-performance gaming laptop.",
+  "category": "desktops",
+  "brand": "Asus",
+  "price": 1499.99,
+  "stock": 25,
+  "imageUrl": "/asus_rog_zephyrus_g14.jpg",
+  "releaseDate": "2021-04-22",
+  "specifications": {
+    "processor": "AMD Ryzen 9",
+    "ram": "16GB",
+    "storage": "1TB SSD",
+    "os": "Windows 10"
+  },
+  "reviews": []
+}
